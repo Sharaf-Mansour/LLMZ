@@ -20,6 +20,10 @@ builder.Services.AddSqliteCollection<string, IngestedDocument>("data-llmz-docume
 builder.Services.AddSingleton<GitHubMcpService>();
 builder.Services.AddSingleton<EverythingMcpService>();
 builder.Services.AddSingleton<FetchMcpService>();
+builder.Services.AddSingleton<SqliteMcpService>();
+builder.Services.AddSingleton<TimeMcpService>();
+builder.Services.AddSingleton<ThinkingMcpService>();
+builder.Services.AddSingleton<FileSystemMcpService>();
 builder.Services.AddScoped<DataIngestor>();
 builder.Services.AddSingleton<SemanticSearch>();
 builder.Services.AddChatClient(chatClient).UseFunctionInvocation().UseLogging();

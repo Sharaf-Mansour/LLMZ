@@ -8,6 +8,24 @@ public class FetchMcpService
         Name = "fetch",
         Command = "python",
         Arguments = ["-m", "mcp_server_fetch"],
+
+    });
+    public async Task<IEnumerable<AIFunction>> GetToolsAsync()
+    {
+        var client = await McpClientFactory.CreateAsync(clientTransport);
+        var tools = await client.ListToolsAsync();
+        return tools;
+    }
+}
+public class ThinkingMcpService
+{
+    StdioClientTransport clientTransport = new(new()
+    {
+        Name = "fetch",
+        Command = "bunx",
+        Arguments = [ "-y",
+        "@modelcontextprotocol/server-sequential-thinking"],
+
     });
     public async Task<IEnumerable<AIFunction>> GetToolsAsync()
     {

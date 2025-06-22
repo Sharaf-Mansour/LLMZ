@@ -7,6 +7,12 @@
 @inject GitHubMcpService GitHubMcpService
 @inject EverythingMcpService EverythingMcpService
 @inject FetchMcpService FetchMcpService
+@inject SqliteMcpService SqliteMcpService
+@inject TimeMcpService TimeMcpService
+@inject FileSystemMcpService FileSystemMcpService
+@inject ThinkingMcpService ThinkingMcpService
+
+
 @implements IDisposable
 
 <PageTitle>Chat</PageTitle>
@@ -31,10 +37,9 @@
     private const string SystemPrompt = @"
         You are an assistant who answers questions about information you retrieve.
         Do not answer questions about anything else.
-        Use only simple markdown to format your responses.
-        Use the tools provided to search for information. or perform actions.
-        Use the search tool to find relevant information. When you do this, end your
-        reply with citations in the special XML format:
+        Use only html tags to format your responses.
+        Use only the tools provided to search for information. or perform actions.
+        end your reply with citations in the special XML format:
 
         <citation filename='string' page_number='number'>exact quote here</citation>
         reply with image in the special HTML format:
@@ -60,7 +65,12 @@
         chatOptions.Tools = [/* AIFunctionFactory.Create(SearchAsync ),*/
             .. await GitHubMcpService.GetToolsAsync(),
             .. await EverythingMcpService.GetToolsAsync(),
-            .. await FetchMcpService.GetToolsAsync()
+            .. await FetchMcpService.GetToolsAsync(),
+            .. await SqliteMcpService.GetToolsAsync(),
+            .. await TimeMcpService.GetToolsAsync(),
+            .. await FileSystemMcpService.GetToolsAsync(),
+            .. await ThinkingMcpService.GetToolsAsync()
+
         
         ];
     }
