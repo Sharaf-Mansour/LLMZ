@@ -1,13 +1,15 @@
 ﻿using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
 namespace LLMZ.Services.MCP;
-public class FetchMcpService
+
+public class ThinkingMcpService
 {
     StdioClientTransport clientTransport = new(new()
     {
-        Name = "fetch",
-        Command = "python",
-        Arguments = ["-m", "mcp_server_fetch"],
+        Name = "sequential-thinking",
+        Command = "bunx",
+        Arguments = [ "-y",
+        "@modelcontextprotocol/server-sequential-thinking"],
 
     });
     public async Task<IEnumerable<AIFunction>> GetToolsAsync()
