@@ -1,14 +1,15 @@
-using Microsoft.Extensions.AI;
 using LLMZ.Components;
 using LLMZ.Services;
 using LLMZ.Services.Ingestion;
+using LLMZ.Services.MCP;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 IChatClient chatClient = new OllamaApiClient(new Uri("http://localhost:11434"),
-    "llama3.2");
+    "qwen3");
 IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator = new OllamaApiClient(new Uri("http://localhost:11434"),
     "all-minilm");
 
@@ -16,7 +17,9 @@ var vectorStorePath = Path.Combine(AppContext.BaseDirectory, "vector-store.db");
 var vectorStoreConnectionString = $"Data Source={vectorStorePath}";
 builder.Services.AddSqliteCollection<string, IngestedChunk>("data-llmz-chunks", vectorStoreConnectionString);
 builder.Services.AddSqliteCollection<string, IngestedDocument>("data-llmz-documents", vectorStoreConnectionString);
-
+builder.Services.AddSingleton<GitHubMcpService>();
+builder.Services.AddSingleton<EverythingMcpService>();
+builder.Services.AddSingleton<FetchMcpService>();
 builder.Services.AddScoped<DataIngestor>();
 builder.Services.AddSingleton<SemanticSearch>();
 builder.Services.AddChatClient(chatClient).UseFunctionInvocation().UseLogging();
@@ -46,5 +49,6 @@ app.MapRazorComponents<App>()
 await DataIngestor.IngestDataAsync(
     app.Services,
     new PDFDirectorySource(Path.Combine(builder.Environment.WebRootPath, "Data")));
+
 
 app.Run();

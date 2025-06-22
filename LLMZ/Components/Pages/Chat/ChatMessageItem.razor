@@ -24,8 +24,8 @@ else if (Message.Role == ChatRole.Assistant)
                 </div>
                 <div class="assistant-message-header">Assistant</div>
                 <div class="assistant-message-text">
-                    <assistant-message markdown="@text"></assistant-message>
-
+                    @* <assistant-message markdown="@text"></assistant-message> *@
+                    @((MarkupString)@text)
                     @foreach (var citation in citations ?? [])
                     {
                         <ChatCitation File="@citation.File" PageNumber="@citation.Page" Quote="@citation.Quote" />

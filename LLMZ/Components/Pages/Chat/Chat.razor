@@ -1,8 +1,12 @@
 ﻿@page "/"
 @using System.ComponentModel
+@using LLMZ.Services.MCP
 @inject IChatClient ChatClient
 @inject NavigationManager Nav
 @inject SemanticSearch Search
+@inject GitHubMcpService GitHubMcpService
+@inject EverythingMcpService EverythingMcpService
+@inject FetchMcpService FetchMcpService
 @implements IDisposable
 
 <PageTitle>Chat</PageTitle>
@@ -11,9 +15,9 @@
 
 <ChatMessageList Messages="@messages" InProgressMessage="@currentResponseMessage">
     <NoMessagesContent>
-        <div>To get started, try asking about these example documents. You can replace these with your own data and replace this message.</div>
+    @*     <div>To get started, try asking about these example documents. You can replace these with your own data and replace this message.</div>
         <ChatCitation File="Example_Emergency_Survival_Kit.pdf"/>
-        <ChatCitation File="Example_GPS_Watch.pdf"/>
+        <ChatCitation File="Example_GPS_Watch.pdf"/> *@
     </NoMessagesContent>
 </ChatMessageList>
 
@@ -28,11 +32,14 @@
         You are an assistant who answers questions about information you retrieve.
         Do not answer questions about anything else.
         Use only simple markdown to format your responses.
-
+        Use the tools provided to search for information. or perform actions.
         Use the search tool to find relevant information. When you do this, end your
         reply with citations in the special XML format:
 
         <citation filename='string' page_number='number'>exact quote here</citation>
+        reply with image in the special HTML format:
+        <img src='string' alt='string'/>
+
 
         Always include the citation in your response if there are results.
 
@@ -47,10 +54,15 @@
     private ChatInput? chatInput;
     private ChatSuggestions? chatSuggestions;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         messages.Add(new(ChatRole.System, SystemPrompt));
-        chatOptions.Tools = [AIFunctionFactory.Create(SearchAsync)];
+        chatOptions.Tools = [/* AIFunctionFactory.Create(SearchAsync ),*/
+            .. await GitHubMcpService.GetToolsAsync(),
+            .. await EverythingMcpService.GetToolsAsync(),
+            .. await FetchMcpService.GetToolsAsync()
+        
+        ];
     }
 
     private async Task AddUserMessageAsync(ChatMessage userMessage)
